@@ -35,7 +35,8 @@ let DB; // Persistent database connection
 
 export async function init() {
   if (!process.env.DB_HOST || !process.env.DB_USER) {
-    logError("Database data not defined. Skipping.")
+    logError("Database data not defined. Skipping.");
+    return;
   }
 
   DB = mysql.createConnection({
