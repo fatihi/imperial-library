@@ -24,6 +24,8 @@ import SetView from "./../Commands/Netrunner/setView.js";
 import GetRule from "./../Commands/Rules/getRule.js";
 import SearchRules from "./../Commands/Rules/searchRules.js";
 
+import Glossary from "../Commands/glossary.js";
+
 import AliasAdd from "./../Commands/Superuser/aliasAdd.js";
 import AliasRemove from "./../Commands/Superuser/aliasRemove.js";
 import AliasView from "../Commands/Superuser/aliasView.js";
@@ -51,6 +53,8 @@ export async function init(client) {
 
     GetRule,
     SearchRules,
+
+    Glossary,
 
     AliasAdd,
     AliasRemove,
