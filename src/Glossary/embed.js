@@ -18,7 +18,7 @@ import { formatText } from "../Netrunner/discord.js";
  */
 export function createGlossaryEmbed(entry) {
   const entryId = entry.label.toLowerCase().replaceAll(/[^a-z0-9]/g, "");
-  const definitionText = formatText(entry.definition.replaceAll(/\[(.+?)\]\(#.+?\)/g, "__$1__"))
+  const definitionText = formatText(entry.definition.replaceAll(/\[([^\]]+?)\]\(#[^\)]+?\)/g, "__$1__"))
   const rulesText = entry.rulesReference ? `\n\nSee Comprehensive Rules entries ${
     entry.rulesReference.split(",").map((cr) => `[${cr}](https://rules.nullsignal.games/#:~:text=${cr}.)`).join(", ")
   }` : "";
