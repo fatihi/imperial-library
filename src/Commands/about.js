@@ -18,7 +18,7 @@ const data = new SlashCommandBuilder()
 const meta = {};
 
 async function execute(interaction, client) {
-  let message = `This is a Discord bot for fetching Netrunner cards from Discord. Learn more on [my website!](https://sahasra.run/)`;
+  let message = `This is a Discord bot for fetching Netrunner cards from Discord. Learn more on [my website](https://sahasra.run/)!\n\nWant more info on how to use this bot? Use the \`/help\` command!`;
 
   const embed = new EmbedBuilder()
     .setTitle(":information_source: About Sahasrara")
