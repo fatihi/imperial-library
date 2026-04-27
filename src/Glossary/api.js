@@ -1,5 +1,5 @@
 /**
- * A module for fetching data from the Netrunner Glossary API.
+ * A module for fetching data from the Glossary API (game-agnostic).
  *
  * @file   This files defines the Glossary API module.
  */
@@ -23,7 +23,7 @@ import { bestMatch } from "../Utility/fuzzySearch.js";
  */
 
 /**
- * An object to store all card data used throughout the bot's lifetime.
+ * An object to store all glossary data used throughout the bot's lifetime.
  * @type {[GlossaryEntry]}
  */
 const DATA = {};
@@ -31,8 +31,8 @@ const DATA = {};
 /**
  * Initialises the api.
  *
- * This function should be called exactly once (at startup) to initialise data
- * from the glossary.
+ * This function should be called exactly once (at startup) to initialise
+ * data from the glossary.
  */
 export async function init() {
   let entries = await fetchGlossary();
