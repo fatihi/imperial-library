@@ -33,11 +33,25 @@ Per-message inline command count is capped by `RESULT_LIMIT` (default 5).
 
 - `/about` — about Imperial Library.
 - `/help` — help text.
-- `/basicActions` — adapt to L5R's basic actions (Dynasty/Conflict phase actions, etc.).
+- `/basic_actions` — adapt to L5R's basic actions (Dynasty/Conflict phase actions, etc.).
 - `/glossary` — L5R/EL keyword and term lookup.
-- `/superuser/*` — admin tooling (alias management, server whitelist).
+- `/search` — free-text card search (EmeraldDB).
+- `/random` — random card, optionally filtered.
+- `/view_set` — browse a card pack/set.
+- `/view_format` — browse a tournament format (EL has formats).
+- `/get_rule` — fetch a rule from the EL rules document by section number.
+- `/search_rule` — free-text search of the EL rules document.
+- Superuser commands (`alias_add`/`alias_remove`/`alias_view`, `whitelist_server_*`) — admin tooling, kept as-is in shape.
 
-**Slash commands dropped:** `/mark` (Netrunner-only mechanic), `/side` (Netrunner Runner/Corp coin-flip; L5R first-player choice is decided by honor bid, not coin flip).
+**Slash commands dropped:**
+
+- `/mark` — Netrunner-only mechanic.
+- `/side` — Netrunner Runner/Corp coin-flip; L5R first-player choice is decided by honor bid, not coin flip.
+- `/view_banlist` — EL has only a current legality state (no historical banlists to enumerate); legality is shown inside `[[card]]`.
+
+**Deferred decisions** (resolved during EmeraldDB API characterization in the build phase):
+
+- `/view_cycle` — kept iff EL groups packs into cycles. If EmeraldDB doesn't expose a cycle concept, drop it.
 
 **Out of scope for now:** clan/ring lookup, honor-bid simulator, conflict-type primer, lore quotes, deckbuilding helpers. Goal is **feature parity with Sahasrara**, not a wider L5R toolbelt.
 
