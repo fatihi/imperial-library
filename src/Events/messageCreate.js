@@ -70,11 +70,16 @@ async function parseInlineCommands(message) {
 
   const filteredContent = content.replace(/(?<!\\)```[\s\S]*?```/g, ""); // Ignore code blocks
   const regex =
-    /\[\[.*?\]\]|\{\{.*?\}\}|<<.*?>>|\(\(.*?\)\)|\[\|.*?\|\]|\{\|.*?\|\}|<\|.*?\|>/g; // Find inline commands
-  const matches = filteredContent.match(regex);
+    /\[\[[^\[\]]+?\]\]|\{\{[^\{\}]+?\}\}|<<[^<>]+?>>|\(\([^\)]+?\)\)|\[\|[^\|]+?\|\]|\{\|[^\|]+?\|\}|<\|[^\|]+?\|>/g;
+  let matches = filteredContent.match(regex);
+
+  // Filter out unintentional queries (long ones, and ones that may contain spoiler tags)
+  matches = matches
+    ? matches.filter((match) => match.length - 4 <= process.env.MAX_QUERY_LENGTH && !match.includes("||"))
+    : [];
 
   // Ignore messages with no commands
-  if (!matches) {
+  if (matches.length == 0) {
     return;
   }
 
