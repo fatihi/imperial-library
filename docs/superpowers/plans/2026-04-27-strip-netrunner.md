@@ -37,13 +37,11 @@ src/
     messageCreate.js    [inline-trigger body removed]
     ready.js
   Glossary/
-    api.js              [comments sanitized; init wiring removed]
-    embed.js            [comments sanitized]
+    api.js              [comments sanitized; init wiring removed; embed.js deleted]
   Permissions/
     serverWhitelist.js
   Rules/
-    api.js              [comments sanitized; init wiring removed]
-    embed.js            [comments sanitized]
+    api.js              [comments sanitized; init wiring removed; embed.js deleted]
   Structures/
     client.js           [card-data init calls removed]
     commands.js         [Netrunner-specific imports removed]
@@ -58,7 +56,9 @@ src/
     time.js
 ```
 
-Deleted: `src/Netrunner/`, `src/ONR/`, `src/Commands/Netrunner/`, `src/Commands/Rules/`, `src/Commands/mark.js`, `src/Commands/side.js`, `src/Commands/basicActions.js`, `src/Commands/glossary.js`, `src/Commands/Superuser/aliasAdd.js`, `src/Commands/Superuser/aliasRemove.js`, `src/Commands/Superuser/aliasView.js`, `resources/CardData/*`.
+Deleted: `src/Netrunner/`, `src/ONR/`, `src/Commands/Netrunner/`, `src/Commands/Rules/`, `src/Commands/mark.js`, `src/Commands/side.js`, `src/Commands/basicActions.js`, `src/Commands/glossary.js`, `src/Commands/Superuser/aliasAdd.js`, `src/Commands/Superuser/aliasRemove.js`, `src/Commands/Superuser/aliasView.js`, `src/Glossary/embed.js`, `src/Rules/embed.js`, `resources/CardData/*`.
+
+`Glossary/embed.js` and `Rules/embed.js` are deleted (not just sanitized) because they are heavily Netrunner-coupled — they import `formatText` from `Netrunner/discord.js`, embed hardcoded `nullsignal.games` and `sahasra.run` URLs, and consume Netrunner-specific glossary-type color env vars. The build phase rewrites both. The `api.js` files survive unchanged in shape (pure fetch-and-index, game-agnostic) and get rewired with EmeraldDB URLs in the build phase.
 
 ---
 
@@ -515,17 +515,38 @@ git commit -m "Deleted Netrunner and ONR source modules and Netrunner-specific c
 
 ---
 
-## Task 7: Sanitize comments in `Glossary/` and `Rules/` modules
+## Task 7: Delete embed modules; sanitize api modules
 
-`src/Glossary/api.js`, `src/Glossary/embed.js`, `src/Rules/api.js`, `src/Rules/embed.js` have generic, reusable code, but their JSDoc comments mention "Netrunner" and "NetrunnerDB". The build phase will re-wire these to EmeraldDB. Strip the Netrunner-specific phrasing now so the comments don't lie about what the code does.
+`src/Glossary/embed.js` and `src/Rules/embed.js` are too tightly coupled to Netrunner to keep:
+
+- `Glossary/embed.js` imports `formatText` from `Netrunner/discord.js` (deleted in Task 6), and hardcodes `https://rules.nullsignal.games/` and `https://sahasra.run/` URLs in the embed body.
+- `Rules/embed.js` builds a URL from `process.env.RULES_URL` for a Netrunner-flavoured "Comprehensive Rules" footer.
+
+The build phase will rewrite both with EmeraldDB-flavoured URLs and EL-appropriate styling. Delete them now.
+
+`src/Glossary/api.js` and `src/Rules/api.js` are game-agnostic in shape (pure fetch + index + lookup) but their JSDoc comments mention "Netrunner" and "NetrunnerDB". Sanitize the comments.
 
 **Files:**
+- Delete: `src/Glossary/embed.js`
+- Delete: `src/Rules/embed.js`
 - Modify: `src/Glossary/api.js`
-- Modify: `src/Glossary/embed.js`
 - Modify: `src/Rules/api.js`
-- Modify: `src/Rules/embed.js`
 
-- [ ] **Step 1: Sanitize `src/Glossary/api.js`**
+- [ ] **Step 1: Delete the embed modules**
+
+```bash
+git rm src/Glossary/embed.js src/Rules/embed.js
+```
+
+Confirm no surviving file imports either:
+
+```bash
+grep -rn "from \".*Glossary/embed\|from \".*Rules/embed" src && echo "FAIL" || echo "OK: no surviving imports"
+```
+
+Expected: `OK: no surviving imports`. (After Task 6, the only importers — `Commands/glossary.js`, `Commands/Rules/getRule.js`, `Commands/Rules/searchRules.js` — are gone.)
+
+- [ ] **Step 2: Sanitize `src/Glossary/api.js`**
 
 Apply these specific edits:
 
@@ -567,7 +588,7 @@ const DATA = {};
  */
 ```
 
-- [ ] **Step 2: Sanitize `src/Rules/api.js`**
+- [ ] **Step 3: Sanitize `src/Rules/api.js`**
 
 Find:
 ```
@@ -611,27 +632,20 @@ const DATA = {};
  */
 ```
 
-- [ ] **Step 3: Skim `src/Glossary/embed.js` and `src/Rules/embed.js` for Netrunner references**
-
-```bash
-grep -n -i "netrunner\|nrdb\|nullsignal" src/Glossary/embed.js src/Rules/embed.js
-```
-
-If matches appear, edit them to neutral phrasing. If none, this step is a no-op.
-
 - [ ] **Step 4: Verify**
 
 ```bash
-node --check src/Glossary/api.js src/Glossary/embed.js src/Rules/api.js src/Rules/embed.js
+node --check src/Glossary/api.js src/Rules/api.js
+test ! -f src/Glossary/embed.js && test ! -f src/Rules/embed.js && echo "OK: embeds deleted"
 ```
 
-Expected: exits 0.
+Expected: `node --check` exits 0; second command prints `OK: embeds deleted`.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/Glossary/api.js src/Glossary/embed.js src/Rules/api.js src/Rules/embed.js
-git commit -m "Sanitized Netrunner references from Glossary and Rules module comments"
+git add src/Glossary/api.js src/Rules/api.js
+git commit -m "Deleted Glossary/Rules embed modules and sanitized api comments"
 ```
 
 ---
@@ -655,6 +669,10 @@ GUILD_ID=YOUR.GUILD.ID.HERE # (optional)
 SUPER_USER=YOUR.USER.ID.HERE
 STATUS=custom status here
 
+# API (set during the Emerald Legacy build phase)
+GLOSSARY_URL=
+RULES_URL=
+
 # ACCESS RESTRICTION
 ALLOW_DIRECT_MESSAGES=0 # If users can use the bot in DMs
 WHITELIST_SERVERS=1 # If servers must be whitelisted by the superuser for users there to use the bot
@@ -667,6 +685,7 @@ MAX_QUERY_LENGTH=30 # Max length an inline query can be before it is ignored
 DB_HOST=localhost
 DB_USER=username
 DB_PASSWORD=password
+DB_NAME=imperial_library
 
 # COLORS
 COLOR_POSITIVE=0x57F287
@@ -679,12 +698,17 @@ COLOR_ERROR=0x992e22
 
 Removed:
 
-- `API_URL`, `NRDB_URL`, `ONR_URL`, `RULES_URL`, `SEARCH_URL`, `GLOSSARY_URL` — all Netrunner data sources.
+- `API_URL`, `NRDB_URL`, `ONR_URL`, `SEARCH_URL` — Netrunner-specific card-data sources, no surviving consumers.
 - `COLOR_RUNNER`, `COLOR_CORP`, faction colors (anarch, criminal, shaper, hb, jinteki, nbn, weyland), neutral runner/corp, adam, apex, sunny, HQ/RND/Archives, ONR rarities, glossary type colors — Netrunner-specific.
 - All Netrunner emoji vars (`EMOJI_CLICK`, `EMOJI_CREDIT`, `EMOJI_INTERRUPT`, `EMOJI_LINK`, `EMOJI_MU`, `EMOJI_NETRUNNER`, `EMOJI_RECURRING_CREDIT`, `EMOJI_SUBROUTINE`, `EMOJI_TRASH_*`, faction emojis, ONR emojis).
 - All `IMAGE_*` vars (faction icons, basic actions images).
 
-The kept generic colors (`COLOR_POSITIVE`, `COLOR_NEUTRAL`, `COLOR_NEGATIVE`, `COLOR_INFO`, `COLOR_ERROR`) are still consumed by `src/Commands/about.js`, `src/Commands/help.js`, and the whitelist superuser commands.
+Kept (with placeholder values where applicable):
+
+- `GLOSSARY_URL`, `RULES_URL` — empty placeholders; surviving `src/Glossary/api.js` and `src/Rules/api.js` reference them but their `init()` functions are no longer called at startup (Task 3 removed the calls). The build phase fills these with EmeraldDB URLs and re-adds the init calls.
+- `DB_NAME` — `src/Database/database.js` reads it. Default value `imperial_library` is a sensible no-op for fresh installs.
+- Generic colors (`COLOR_POSITIVE`, `COLOR_NEUTRAL`, `COLOR_NEGATIVE`, `COLOR_INFO`, `COLOR_ERROR`) — consumed by `src/Commands/about.js`, `src/Commands/help.js`, and the whitelist superuser commands.
+- `RESULT_LIMIT`, `MAX_QUERY_LENGTH` — unused after strip until inline triggers return in the build phase, but kept to signal the intended config surface.
 
 - [ ] **Step 2: Sanity-check that the kept env vars cover everything the surviving code reads**
 
@@ -694,7 +718,7 @@ grep -roh "process\.env\.[A-Z_]*" src | sort -u
 
 Cross-check the output against `.env.example`. Any `process.env.FOO` referenced by surviving code that is not in `.env.example` is a gap. Fix gaps before committing — either re-add the var or remove the dead reference.
 
-Expected references after the strip (approximately): `TOKEN`, `BOT_ID`, `GUILD_ID`, `SUPER_USER`, `STATUS`, `ALLOW_DIRECT_MESSAGES`, `WHITELIST_SERVERS`, `RESULT_LIMIT`, `MAX_QUERY_LENGTH`, `DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`, `COLOR_INFO`, `COLOR_ERROR`. (`RESULT_LIMIT` and `MAX_QUERY_LENGTH` will be unused until inline triggers return in the build phase, but keep them — they're cheap and signal the intended config surface.)
+Expected references after the strip: `process.env.TOKEN`, `process.env.BOT_ID`, `process.env.GUILD_ID`, `process.env.SUPER_USER`, `process.env.STATUS`, `process.env.GLOSSARY_URL`, `process.env.RULES_URL`, `process.env.ALLOW_DIRECT_MESSAGES`, `process.env.WHITELIST_SERVERS`, `process.env.RESULT_LIMIT`, `process.env.MAX_QUERY_LENGTH`, `process.env.DB_HOST`, `process.env.DB_USER`, `process.env.DB_PASSWORD`, `process.env.DB_NAME`, `process.env.COLOR_INFO`, `process.env.COLOR_ERROR`. All present in the new `.env.example`.
 
 - [ ] **Step 3: Commit**
 
