@@ -531,6 +531,7 @@ The build phase will rewrite both with EmeraldDB-flavoured URLs and EL-appropria
 - Delete: `src/Rules/embed.js`
 - Modify: `src/Glossary/api.js`
 - Modify: `src/Rules/api.js`
+- Modify: `src/Aliases/aliases.js` (one-line `@file` header fix; carry-over from Task 1)
 
 - [ ] **Step 1: Delete the embed modules**
 
@@ -632,19 +633,32 @@ const DATA = {};
  */
 ```
 
-- [ ] **Step 4: Verify**
+- [ ] **Step 4: Fix stale `@file` header in `src/Aliases/aliases.js`**
+
+When the alias module was moved out of `src/Netrunner/` in Task 1 (a pure rename), its JSDoc `@file` header was deliberately not touched. Fix it now alongside the other comment sanitizations.
+
+Find:
+```
+ * @file   This files defines the Netrunner/aliases module.
+```
+Replace with:
+```
+ * @file   This files defines the Aliases/aliases module.
+```
+
+- [ ] **Step 5: Verify**
 
 ```bash
-node --check src/Glossary/api.js src/Rules/api.js
+node --check src/Glossary/api.js src/Rules/api.js src/Aliases/aliases.js
 test ! -f src/Glossary/embed.js && test ! -f src/Rules/embed.js && echo "OK: embeds deleted"
 ```
 
 Expected: `node --check` exits 0; second command prints `OK: embeds deleted`.
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 6: Commit**
 
 ```bash
-git add src/Glossary/api.js src/Rules/api.js
+git add src/Glossary/api.js src/Rules/api.js src/Aliases/aliases.js
 git commit -m "Deleted Glossary/Rules embed modules and sanitized api comments"
 ```
 
