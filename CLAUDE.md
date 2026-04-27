@@ -10,11 +10,11 @@ The hosted public instance + optional self-host model from Sahasrara is preserve
 
 The repo is mid-migration from Netrunner to Emerald Legacy. The plan is **strip-then-build**:
 
-1. Tag/branch the last fully-working Netrunner state so it stays reachable from `git log` without checking out old commits.
-2. Remove `src/Netrunner/`, `src/ONR/`, Netrunner-specific commands (`/mark`, `/side`), Netrunner content from `/about`, `/help`, `/basicActions`, `/glossary`, `resources/CardData/`, the Netrunner aliases file, and all Netrunner-flavoured env vars (faction colors/emojis, NRDB/ONR URLs).
-3. Build the Emerald Legacy module greenfield against EmeraldDB on the leftover scaffolding.
+1. **Done.** Tagged `netrunner-final` — last commit reflecting the Netrunner-era project.
+2. **Done.** Stripped Netrunner/ONR code, content, and config (see `docs/superpowers/plans/2026-04-27-strip-netrunner.md`).
+3. **In progress.** Build the Emerald Legacy module against EmeraldDB on the leftover scaffolding.
 
-Until step 3 lands, the bot still serves Netrunner cards. Don't claim "EL is working" until the EL module is wired into `src/Structures/client.js` in place of `initNetrunner` / `initONR` and slash commands have been re-registered with Discord.
+Until step 3 lands, the bot answers `/about` and `/help` with migration-status placeholders and does not respond to inline triggers. Card lookup returns when EL is wired in.
 
 The README and `.env.example` still describe Sahasrara/Netrunner — they get rewritten as part of the migration, not before.
 
