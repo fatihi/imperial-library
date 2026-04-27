@@ -39,30 +39,12 @@ async function execute(interaction, client) {
     } else {
       titleText = "Unknown command";
       descriptionText =
-        "No command exists with that name! Try `\\help` for a full list of commands.";
+        "No command exists with that name! Try `/help` for a full list of commands.";
       color = +process.env.COLOR_ERROR;
     }
   } else {
-    titleText = "Sahasrara";
-    descriptionText = `
-        A Discord Netrunner bot.
-
-        **Searching for Netrunner cards**
-        \`[[card]]\` to view a card
-        \`{{card}}\` to view its art
-        \`<<card>>\` to view its flavour text
-        \`((card))\` to view its legality history
-
-        **Additional parameters**
-        \`[[card|set]]\` to view the printing of a card from a named set
-        \`[[card|n]]\` to view the nth printing of a card (0 is the first, -1 is the last)
-
-        **Searching for Original Netrunner cards**
-        \`[|card|]\` to view an ONR card
-        \`{|card|}\` to view its art
-        \`<|card|>\` to view its flavour text
-
-        **Commands**`;
+    titleText = "Imperial Library";
+    descriptionText = `A Discord bot for Legend of the Five Rings — Emerald Legacy.\n\n_Card lookup is currently being rebuilt; only meta commands are available right now._\n\n**Commands**`;
 
     client.commands.forEach((command) => {
       if (!command.meta.hideFromHelp) {
