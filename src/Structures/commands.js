@@ -7,27 +7,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 import Help from "./../Commands/help.js";
-import BasicActions from "./../Commands/basicActions.js";
-import Mark from "./../Commands/mark.js";
-import Side from "./../Commands/side.js";
 import About from "./../Commands/about.js";
 
-import Search from "../Commands/Netrunner/search.js";
-import Random from "../Commands/Netrunner/random.js";
-
-import BanlistView from "./../Commands/Netrunner/banlistView.js";
-import CycleView from "./../Commands/Netrunner/cycleView.js";
-import FormatView from "./../Commands/Netrunner/formatView.js";
-import SetView from "./../Commands/Netrunner/setView.js";
-
-import GetRule from "./../Commands/Rules/getRule.js";
-import SearchRules from "./../Commands/Rules/searchRules.js";
-
-import Glossary from "../Commands/glossary.js";
-
-import AliasAdd from "./../Commands/Superuser/aliasAdd.js";
-import AliasRemove from "./../Commands/Superuser/aliasRemove.js";
-import AliasView from "../Commands/Superuser/aliasView.js";
 import WhitelistAddServer from "../Commands/Superuser/whitelistServerAdd.js";
 import WhitelistRemoveServer from "../Commands/Superuser/whitelistServerRemove.js";
 import WhitelistViewServers from "../Commands/Superuser/whitelistServerView.js";
@@ -38,26 +19,7 @@ export async function init(client) {
   const commands = [
     Help,
     About,
-    BasicActions,
-    Mark,
-    Side,
 
-    Search,
-    Random,
-
-    BanlistView,
-    CycleView,
-    FormatView,
-    SetView,
-
-    GetRule,
-    SearchRules,
-
-    Glossary,
-
-    AliasAdd,
-    AliasRemove,
-    AliasView,
     WhitelistAddServer,
     WhitelistRemoveServer,
     WhitelistViewServers,
