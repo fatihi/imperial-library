@@ -1,67 +1,44 @@
-## You don't need to host your own instance to add Sahasrara to your server
-You can add the main instance by opening its profile and clicking "Add App":
+# Imperial Library
 
-<img width="300" height="300" alt="image" src="https://github.com/user-attachments/assets/23734413-bbe6-4853-bbe6-90f7cc2a1fa9" />
+A card-fetching Discord bot for [Legend of the Five Rings — Emerald Legacy](https://emeralddb.org/), the community-maintained continuation of the L5R LCG.
 
-# Sahasrara
+> **Migration status:** This repository is a fork of [Sahasrara](https://github.com/distributive/Sahasrara2) by [@distributive](https://github.com/distributive), a Netrunner card-fetching bot, being adapted to Emerald Legacy. The running bot still serves Netrunner cards while the migration is in progress. See `CLAUDE.md` for the migration plan.
 
-A card-fetching Discord bot for the card game [Netrunner](https://nullsignal.games/).
+## Adding the bot to your server
 
-Named after the card [Sahasrara](https://www.netrunnerdb.com/en/card/03047) for it's flavour text, the original version of this bot was written in Haskell:
-
-> _Out there, the thousand-petaled lotus symbolizes detachment from illusion. In here, it is the birthplace of a higher consciousness. Something infinitely pure._
-
-Infinitely pure as Haskell may be, discord.js has more features.
+A public hosted instance will be available once the migration is complete. Until then, the bot can be self-hosted (see below).
 
 ## Client use
 
-This bot supports a number of interactions (slash commands) and some inline commands:
+The bot supports a number of slash commands and a few inline triggers.
 
-### Searching for Netrunner cards
+### Searching for cards
 
-You can fetch cards by including the following in a Discord message:
+Include any of the following in a Discord message to fetch a card:
 
-- [[card]] to view a card
-- {{card}} to view its art
-- <\<card>> to view its flavour text
-- ((card)) to view its legality history
+- `[[card]]` — view the card (includes its current legality).
+- `{{card}}` — view its art.
+- `<<card>>` — view its flavour text.
 
-Each Discord message is limited to 5 (by default) inline commands. Any additional commands will be ignored.
+Each Discord message is limited to 5 inline triggers (configurable via `RESULT_LIMIT`). Any extra triggers are ignored.
 
-## Server use
-
-### Running the bot
+## Self-hosting
 
 ```bash
-cp .env.example .env # You will need to add your application token and bot ID to the new file
+cp .env.example .env # add your application token and bot ID
 npm install
 node index.js
 ```
 
 ### Resources
 
-The resources directory contains instance-specific data you may want to use during run time:
+The `resources/` directory holds instance-specific data read at startup:
 
-The following files are read at startup, and then overwritten as relevant superuser commands are applied:
-
-- resources/aliases.yml
-  - A list of card aliases (i.e. strings that, if used in an inline message, will be manually redirected to a specific card)
-  - e.g. [[franklin]] may be redirected to fetch the card [Crick](https://netrunnerdb.com/en/card/08034).
-- resources/serverWhitelist.yml
-  - If the env setting `WHITELIST_SERVERS` is truthy, that instance of the bot will only work in whitelisted servers, which are stored in this file.
-
-The following files are only read at startup, and not written to during runtime:
-
-- resources/CardData
-  - This directory allows you to define Netrunner data not on the external API you fetch the rest of your Netrunner data from.
-  - The files contained within are expected to follow the same schema as the official [v3 Netrunner API](https://api.netrunnerdb.com/api/docs/).
-  - If any local data conflicts with data pulled from the API, the local data takes precedence.
-  - It supports the following subdirectories:
-    - resources/CardData/Cards
-    - resources/CardData/Printings
-    - resources/CardData/CardSets
-    - resources/CardData/CardCycles
+- `resources/aliases.yml` — manual redirects from a query string to a specific card (e.g. a nickname). Rewritten when superuser commands edit it.
+- `resources/serverWhitelist.yml` — if `WHITELIST_SERVERS` is truthy, the bot only responds in servers listed here. Rewritten when superuser commands edit it.
+- `resources/CardData/` — local card data overrides, following the upstream API schema. If local data conflicts with data from the API, local data wins.
 
 ## Acknowledgements
 
-This software is based on the template [Slash Bot Template](https://github.com/GuriZenit/slash-bot-template) by GuriZenit.
+- Forked from [Sahasrara](https://github.com/distributive/Sahasrara2) by [@distributive](https://github.com/distributive), a Netrunner card-fetching bot.
+- Sahasrara was based on [Slash Bot Template](https://github.com/GuriZenit/slash-bot-template) by GuriZenit.
