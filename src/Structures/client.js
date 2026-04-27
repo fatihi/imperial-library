@@ -16,10 +16,6 @@ import {
 import { init as initCommands } from "./commands.js";
 import { init as initHandler } from "./handler.js";
 import { init as initEvents } from "./events.js";
-import { init as initNetrunner } from "../Netrunner/api.js";
-import { init as initONR } from "../ONR/api.js";
-import { init as initRules } from "../Rules/api.js";
-import { init as initGlossary } from "../Glossary/api.js";
 import { loadWhitelist } from "../Permissions/serverWhitelist.js";
 import { init as initDatabase } from "../Database/database.js";
 import { readBool } from "../Utility/env.js";
@@ -47,20 +43,6 @@ export async function start(config) {
   // Initialise database
   console.log("initialising database...");
   await initDatabase();
-
-  // Initialise card data so it can be accessed by commands on initialisation
-  console.log("initialising nrdb api...");
-  await initNetrunner();
-  console.log("initialising onr api...");
-  await initONR();
-
-  // Initialise comprehensive rules data
-  console.log("initialising rules api...");
-  await initRules();
-
-  // Initialise glossary data
-  console.log("initialising glossary api...");
-  await initGlossary();
 
   // Set up whitelist
   if (readBool("WHITELIST_SERVERS")) {
