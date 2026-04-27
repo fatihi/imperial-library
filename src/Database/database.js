@@ -16,8 +16,7 @@ let DB; // Persistent database connection
 /**
  * Database schema:
  *
- * IsONR [0: false, 1: true]
- * QueryType [0: text, 1: image, 2: flavour, 3: legality]
+ * QueryType [0: text, 1: image, 2: flavour]
  *
   CREATE TABLE Query (
     ID INT NOT NULL AUTO_INCREMENT,
@@ -25,11 +24,18 @@ let DB; // Persistent database connection
     CardId VARCHAR(60) NOT NULL,
     PrintingId VARCHAR(8) NOT NULL,
     ChannelType BIT(5) NOT NULL,
-    IsONR BIT(1) NOT NULL,
     QueryType BIT(2) NOT NULL,
     Timestamp DATETIME NOT NULL,
     PRIMARY KEY (ID)
   );
+ *
+ * Migration note: prior schema had an IsONR BIT(1) column and a QueryType=3
+ * legality value. Both are dropped post-Netrunner. Any deployed instance of
+ * the prior schema must run:
+ *   ALTER TABLE Query DROP COLUMN IsONR;
+ *   DELETE FROM Query WHERE QueryType = 3;
+ * Imperial Library has no deployed instance at the time of this migration,
+ * so no live ALTER is needed — this note is for future reference only.
  */
 
 export async function init() {
@@ -62,15 +68,13 @@ export async function init() {
  * @param {string} cardId The card ID of the fetched card.
  * @param {string} printingId The printing ID of the fetched card.
  * @param {number} channelType A flag representing the type of channel the request was sent from.
- * @param {number} isOnr Is this an ONR card?.
- * @param {number} queryType A flag representing if the request was for text, image, flavour text, or legality.
+ * @param {number} queryType A flag representing if the request was for text (0), image (1), or flavour (2).
  */
 export function logQuery(
   query,
   cardId,
   printingId,
   channelType,
-  isOnr,
   queryType
 ) {
   // Exit early if the database was not loaded on startup
@@ -85,7 +89,6 @@ export function logQuery(
     CardId: cardId.substring(0, 60),
     PrintingId: printingId.substring(0, 8),
     ChannelType: channelType,
-    IsONR: isOnr ? 1 : 0,
     QueryType: queryType,
     Timestamp: new Date(),
   };
