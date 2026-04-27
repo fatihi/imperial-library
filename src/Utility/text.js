@@ -2,7 +2,6 @@
  * A utility module for functions that modify strings.
  *
  * @file   This files defines the text utility module.
- * @since  1.0.0
  */
 
 ///////////////////////////////////////////////////////////////////////////////

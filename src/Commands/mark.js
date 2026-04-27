@@ -2,7 +2,6 @@
  * A command for identifying a player's mark (HQ, R&D, or Archives).
  *
  * @file   This files defines the mark command module.
- * @since  1.0.0
  */
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -2,7 +2,6 @@
  * A command for viewing rules from the comprehensive rules.
  *
  * @file   This files defines the get_rule command module.
- * @since  1.0.0
  */
 
 ///////////////////////////////////////////////////////////////////////////////

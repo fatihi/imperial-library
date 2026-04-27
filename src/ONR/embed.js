@@ -2,7 +2,6 @@
  * A module for building ONR-based Discord embeds.
  *
  * @file   This files defines the ONR/embed module.
- * @since  1.0.0
  */
 
 ///////////////////////////////////////////////////////////////////////////////

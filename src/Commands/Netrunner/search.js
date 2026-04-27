@@ -2,7 +2,6 @@
  * A command for searching for Netrunner cards.
  *
  * @file   This files defines the search command module.
- * @since  1.0.0
  */
 
 ///////////////////////////////////////////////////////////////////////////////

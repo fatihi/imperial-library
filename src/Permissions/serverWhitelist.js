@@ -3,7 +3,6 @@
  * servers.
  *
  * @file   This files defines the Permissions/serverWhitelist module.
- * @since  1.0.0
  */
 
 ///////////////////////////////////////////////////////////////////////////////

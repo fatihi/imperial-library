@@ -2,7 +2,6 @@
  * A utility module for handling errors.
  *
  * @file   This files defines the error utility module.
- * @since  1.0.0
  */
 
 ///////////////////////////////////////////////////////////////////////////////

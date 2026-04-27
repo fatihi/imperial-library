@@ -2,7 +2,6 @@
  * A command for fetching Netrunner glossary entries.
  *
  * @file   This files defines the glossary command module.
- * @since  1.0.0
  */
 
 ///////////////////////////////////////////////////////////////////////////////

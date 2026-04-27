@@ -2,7 +2,6 @@
  * The events module. This loads all the event handlers at startup.
  *
  * @file   This files defines the events module for the bot.
- * @since  1.0.0
  */
 
 ///////////////////////////////////////////////////////////////////////////////

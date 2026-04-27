@@ -2,7 +2,6 @@
  * A command for viewing card restrictions.
  *
  * @file   This files defines the view_banlist command module.
- * @since  1.0.0
  */
 
 ///////////////////////////////////////////////////////////////////////////////

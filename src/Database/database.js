@@ -2,7 +2,6 @@
  * A module for handling local database storage.
  *
  * @file   This files defines the Database/database module.
- * @since  1.0.0
  */
 
 ///////////////////////////////////////////////////////////////////////////////

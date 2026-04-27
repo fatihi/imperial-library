@@ -2,7 +2,6 @@
  * A command for selecting random Netrunner cards.
  *
  * @file   This files defines the random command module.
- * @since  1.0.0
  */
 
 ///////////////////////////////////////////////////////////////////////////////

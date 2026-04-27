@@ -2,7 +2,6 @@
  * A module for responding to messages sent in servers containing this bot.
  *
  * @file   This files defines the message-response module.
- * @since  1.0.0
  */
 
 ///////////////////////////////////////////////////////////////////////////////

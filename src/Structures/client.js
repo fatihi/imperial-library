@@ -2,7 +2,6 @@
  * The primary module for the bot. This should handle startup.
  *
  * @file   This files defines the top level module for the bot.
- * @since  1.0.0
  */
 
 ///////////////////////////////////////////////////////////////////////////////

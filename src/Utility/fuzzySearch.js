@@ -3,7 +3,6 @@
  * in string search spaces.
  *
  * @file   This files defines the fuzzySearch utility module.
- * @since  1.0.0
  */
 
 ///////////////////////////////////////////////////////////////////////////////

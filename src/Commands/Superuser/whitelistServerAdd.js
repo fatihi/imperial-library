@@ -2,7 +2,6 @@
  * A secret command for whitelisting servers.
  *
  * @file   This files defines the whitelistServerAdd command module.
- * @since  1.0.0
  */
 
 ///////////////////////////////////////////////////////////////////////////////

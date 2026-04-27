@@ -2,7 +2,6 @@
  * A secret command for removing servers from the whitelist.
  *
  * @file   This files defines the whiteServerRemove command module.
- * @since  1.0.0
  */
 
 ///////////////////////////////////////////////////////////////////////////////

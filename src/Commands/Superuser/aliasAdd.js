@@ -2,7 +2,6 @@
  * A secret command for adding aliases.
  *
  * @file   This files defines the aliasAdd command module.
- * @since  1.0.0
  */
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -2,7 +2,6 @@
  * A command for randomly selecting a side for a player to play as (corp or runner).
  *
  * @file   This files defines the side command module.
- * @since  1.0.0
  */
 
 ///////////////////////////////////////////////////////////////////////////////

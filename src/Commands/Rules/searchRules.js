@@ -2,7 +2,6 @@
  * A command for searching the comprehensive rules.
  *
  * @file   This files defines the search_rules command module.
- * @since  1.0.0
  */
 
 ///////////////////////////////////////////////////////////////////////////////

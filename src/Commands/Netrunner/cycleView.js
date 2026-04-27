@@ -2,7 +2,6 @@
  * A command for viewing card cycles.
  *
  * @file   This files defines the view_cycle command module.
- * @since  1.0.0
  */
 
 ///////////////////////////////////////////////////////////////////////////////

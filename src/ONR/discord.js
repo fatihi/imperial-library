@@ -2,7 +2,6 @@
  * A module for supporting the Discord-specific display of ONR elements.
  *
  * @file   This files defines the ONR/discord module.
- * @since  1.0.0
  */
 
 ///////////////////////////////////////////////////////////////////////////////

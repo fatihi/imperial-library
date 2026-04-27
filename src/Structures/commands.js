@@ -2,7 +2,6 @@
  * The command module. This loads all the commands at startup.
  *
  * @file   This files defines the commands module for the bot.
- * @since  1.0.0
  */
 
 ///////////////////////////////////////////////////////////////////////////////

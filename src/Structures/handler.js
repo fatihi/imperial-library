@@ -2,7 +2,6 @@
  * The handler module. This registers all application commands with the Discord API at startup.
  *
  * @file   This files defines the handler module for the bot.
- * @since  1.0.0
  */
 
 ///////////////////////////////////////////////////////////////////////////////

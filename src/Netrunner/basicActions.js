@@ -2,7 +2,6 @@
  * A module for displaying the basic action cards.
  *
  * @file   This files defines the Netrunner/basicActionCard module.
- * @since  1.0.0
  */
 
 ///////////////////////////////////////////////////////////////////////////////

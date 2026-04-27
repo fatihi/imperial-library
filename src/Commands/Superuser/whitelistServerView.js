@@ -2,7 +2,6 @@
  * A secret command for viewing the server whitelist.
  *
  * @file   This files defines the whitelistServerView command module.
- * @since  1.0.0
  */
 
 ///////////////////////////////////////////////////////////////////////////////

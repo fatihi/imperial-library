@@ -2,7 +2,6 @@
  * A module for fetching data from the Netrunner Glossary API.
  *
  * @file   This files defines the Glossary API module.
- * @since  1.0.0
  */
 
 ///////////////////////////////////////////////////////////////////////////////

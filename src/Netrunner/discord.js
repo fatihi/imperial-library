@@ -2,7 +2,6 @@
  * A module for supporting the Discord-specific display of Netrunner elements.
  *
  * @file   This files defines the Netrunner/discord module.
- * @since  1.0.0
  */
 
 ///////////////////////////////////////////////////////////////////////////////

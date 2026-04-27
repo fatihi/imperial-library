@@ -2,7 +2,6 @@
  * A secret command for viewing a card's aliases.
  *
  * @file   This files defines the aliasView command module.
- * @since  1.0.0
  */
 
 ///////////////////////////////////////////////////////////////////////////////

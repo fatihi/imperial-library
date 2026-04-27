@@ -2,7 +2,6 @@
  * A command for displaying the basic action cards.
  *
  * @file   This files defines the basicAction command module.
- * @since  1.0.0
  */
 
 ///////////////////////////////////////////////////////////////////////////////

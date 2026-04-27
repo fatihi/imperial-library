@@ -2,7 +2,6 @@
  * A module for handling the loading, updating, and saving of card aliases.
  *
  * @file   This files defines the Netrunner/aliases module.
- * @since  1.0.0
  */
 
 ///////////////////////////////////////////////////////////////////////////////

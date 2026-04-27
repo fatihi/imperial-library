@@ -2,7 +2,6 @@
  * A utility module for randomisation functions.
  *
  * @file   This files defines the random utility module.
- * @since  1.0.0
  */
 
 ///////////////////////////////////////////////////////////////////////////////

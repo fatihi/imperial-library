@@ -2,7 +2,6 @@
  * A secret command for removing aliases.
  *
  * @file   This files defines the aliasRemove command module.
- * @since  1.0.0
  */
 
 ///////////////////////////////////////////////////////////////////////////////

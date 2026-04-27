@@ -2,7 +2,6 @@
  * A utility module for handling times and dates.
  *
  * @file   This files defines the time utility module.
- * @since  1.0.0
  */
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -2,7 +2,6 @@
  * A module for building Netrunner-based Discord embeds.
  *
  * @file   This files defines the Netrunner/embed module.
- * @since  1.0.0
  */
 
 ///////////////////////////////////////////////////////////////////////////////

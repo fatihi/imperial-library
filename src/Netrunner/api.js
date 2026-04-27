@@ -2,7 +2,6 @@
  * A module for fetching data from the NetrunnerDB v3 API.
  *
  * @file   This files defines the Netrunner/api module.
- * @since  1.0.0
  */
 
 ///////////////////////////////////////////////////////////////////////////////

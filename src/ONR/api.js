@@ -2,7 +2,6 @@
  * A module for fetching Original Netrunner data.
  *
  * @file   This files defines the ONR/api module.
- * @since  1.0.0
  */
 
 ///////////////////////////////////////////////////////////////////////////////

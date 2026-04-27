@@ -2,7 +2,6 @@
  * A utility module for accessing .env variables.
  *
  * @file   This files defines the env utility module.
- * @since  1.0.0
  */
 
 ///////////////////////////////////////////////////////////////////////////////

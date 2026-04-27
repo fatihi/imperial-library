@@ -2,7 +2,6 @@
  * A command for displaying info about Sahasrara
  *
  * @file   This files defines the about command module.
- * @since  1.0.0
  */
 
 ///////////////////////////////////////////////////////////////////////////////
