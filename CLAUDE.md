@@ -16,8 +16,6 @@ The repo is mid-migration from Netrunner to Emerald Legacy. The plan is **strip-
 
 Until step 3 lands, the bot answers `/about` and `/help` with migration-status placeholders and does not respond to inline triggers. Card lookup returns when EL is wired in.
 
-The README and `.env.example` still describe Sahasrara/Netrunner — they get rewritten as part of the migration, not before.
-
 ## What the bot does (target state)
 
 **Inline triggers** (preserved from Sahasrara, retargeted at L5R cards):
@@ -66,20 +64,19 @@ Per-message inline command count is capped by `RESULT_LIMIT` (default 5).
 ```
 src/
   Structures/      Discord client bootstrap, command/handler/event loaders
-    client.js      Top-level start(); init order: DB → card APIs → rules → glossary → whitelist → commands → handler → events → login
-  Events/          interactionCreate, messageCreate (inline triggers), ready
+    client.js      Top-level start(); init order: DB → whitelist → commands → handler → events → login
+  Events/          interactionCreate, messageCreate (inline triggers — body stubbed, rebuilt in build phase), ready
   Commands/        Slash commands; one file per command; Superuser/ subdirectory for admin
   Utility/         env, error, fuzzySearch (weighted Damerau-Levenshtein), random, text, time
   Database/        MySQL (lightly used; check before assuming a feature touches it)
   Permissions/     Server whitelist
-  Glossary/        api.js fetches/normalises glossary, embed.js renders
-  Rules/           Same shape: api.js + embed.js
-  Netrunner/       (to be removed) api.js, embed.js, discord.js, aliases.js, basicActions.js
-  ONR/             (to be removed) api.js, embed.js, discord.js
-  EmeraldLegacy/   (to be created) mirror the api/embed/discord split used by Netrunner/
+  Aliases/         aliases.js — game-agnostic string→cardName redirect table backed by resources/aliases.yml
+  Glossary/        api.js — game-agnostic fetch/index of a glossary JSON; orphan until build phase rewires init
+  Rules/           api.js — game-agnostic fetch/index of a rules JSON; orphan until build phase rewires init
+  EmeraldLegacy/   (to be created in build phase) api.js, embed.js, discord.js — card lookup, slash commands, inline triggers
 ```
 
-Each game module follows the same shape: `api.js` (fetch + cache + lookup), `embed.js` (render to a Discord embed), `discord.js` (slash command / inline glue). Follow that pattern when building `EmeraldLegacy/`.
+The build phase will create `src/EmeraldLegacy/` with `api.js` (fetch + cache + lookup), `embed.js` (render to a Discord embed), and `discord.js` (slash command / inline glue), and rewire `Glossary/api.js` and `Rules/api.js` against EmeraldDB by setting `GLOSSARY_URL`/`RULES_URL` and re-adding their `init()` calls in `client.js`.
 
 ## Conventions
 
@@ -99,6 +96,7 @@ Each game module follows the same shape: `api.js` (fetch + cache + lookup), `emb
 
 ## Related files
 
-- `README.md` — user-facing project description. Currently still Sahasrara/Netrunner; gets rewritten as part of the migration.
-- `.env.example` — exhaustive list of runtime config. Currently still Netrunner; gets rewritten as part of the migration (clan colors/emojis instead of faction colors/emojis, EmeraldDB URLs, etc.).
+- `README.md` — user-facing project description for Imperial Library, with a migration-status banner pointing here.
+- `.env.example` — runtime config template. Slimmed down during the strip phase; the build phase will add EL-specific keys (clan colors, ring/clan emojis, populated `GLOSSARY_URL`/`RULES_URL`) as their consumers are written.
 - `LICENSE` — MIT, inherited from the upstream template.
+- `docs/superpowers/plans/2026-04-27-strip-netrunner.md` — the strip-phase implementation plan, kept for reference.

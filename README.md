@@ -36,7 +36,8 @@ The `resources/` directory holds instance-specific data read at startup:
 
 - `resources/aliases.yml` — manual redirects from a query string to a specific card (e.g. a nickname). Rewritten when superuser commands edit it.
 - `resources/serverWhitelist.yml` — if `WHITELIST_SERVERS` is truthy, the bot only responds in servers listed here. Rewritten when superuser commands edit it.
-- `resources/CardData/` — local card data overrides, following the upstream API schema. If local data conflicts with data from the API, local data wins.
+
+Local card-data overrides will be re-established during the Emerald Legacy build phase.
 
 ## Acknowledgements
 
