@@ -165,7 +165,7 @@ git commit -m "Added EMERALDDB_API_URL to .env.example"
 
 `src/EmeraldLegacy/discord.js` holds small pure functions that the embed renderer uses: clan→Discord-color mapping, type/side display formatting, faction name display. These are independent of any API data so they're built first.
 
-L5R clans (per the API research): `crab`, `crane`, `dragon`, `lion`, `mantis`, `phoenix`, `scorpion`, `unicorn`, `neutral`, `shadowlands`. Standard color associations from L5R lore: Crab brown/blue, Crane white/blue, Dragon green, Lion gold, Mantis green/orange, Phoenix orange/red, Scorpion red/black, Unicorn purple, Neutral gray, Shadowlands black.
+L5R clans (per the API research): `crab`, `crane`, `dragon`, `lion`, `mantis`, `phoenix`, `scorpion`, `unicorn`, `neutral`, `shadowlands`. The hex values below are the canonical clan palette lifted from `~/Projects/l5r/emeralddb/client/src/utils/factionUtils.ts` so embeds match the EmeraldDB website.
 
 **Files:**
 - Create: `src/EmeraldLegacy/discord.js`
@@ -192,16 +192,16 @@ Create `src/EmeraldLegacy/discord.js` with:
  */
 export function factionToColor(faction) {
   switch (faction) {
-    case "crab":         return 0x1f4e79; // Crab blue
-    case "crane":        return 0x4f81bd; // Crane blue
-    case "dragon":       return 0x4f8d3e; // Dragon green
-    case "lion":         return 0xc9a227; // Lion gold
-    case "mantis":       return 0x2e8b57; // Mantis green
-    case "phoenix":      return 0xc0392b; // Phoenix red
-    case "scorpion":     return 0x6f1313; // Scorpion crimson
-    case "unicorn":      return 0x6f3782; // Unicorn purple
-    case "shadowlands":  return 0x111111; // Shadowlands black
-    case "neutral":      return 0x7f7f7f; // Neutral gray
+    case "crab":         return 0x163078;
+    case "crane":        return 0x44c2bc;
+    case "dragon":       return 0x1d6922;
+    case "lion":         return 0xdece23;
+    case "mantis":       return 0x2c8369;
+    case "phoenix":      return 0xde9923;
+    case "scorpion":     return 0xab1916;
+    case "unicorn":      return 0x90119e;
+    case "neutral":      return 0xb1b1b1;
+    case "shadowlands":  return 0x000000;
     default:             return +process.env.COLOR_INFO;
   }
 }
@@ -291,7 +291,12 @@ git commit -m "Added EmeraldLegacy display helpers"
 
 `src/EmeraldLegacy/api.js` is the data layer. At startup it fetches `/api/cards`, `/api/packs`, `/api/cycles`, `/api/formats` from EmeraldDB and builds in-memory indices. It exposes lookup helpers that downstream modules (embeds, inline triggers, alias autocomplete) use.
 
-The fuzzy-search strategy reuses `src/Utility/fuzzySearch.js` (`bestMatchValue`). The L5R-specific complication: a single normalised name can map to multiple distinct cards (e.g. "Tadaka", "Hida Kisada"). The lookup returns *all* cards sharing the best-matched name, and the caller decides how to render.
+The fuzzy-search strategy reuses `src/Utility/fuzzySearch.js` (`bestMatchValue`). The L5R-specific complication: multiple distinct cards can share the same `name`, distinguished by `name_extra` (e.g. `Hida Kisada` and `Hida Kisada (2)`). Lookup semantics:
+
+1. **Direct disambiguated address.** If the query is an exact match for a `name + name_extra` key (with `(N)` parens optional), return *just that card*. Examples: `[[hida kisada (2)]]` → the (2) variant only; `[[hida kisada 2]]` → the same card (parens stripped).
+2. **Bare-name fallback.** Otherwise, fuzzy-match against bare normalised names. Returns *all* cards sharing the matched bare name (sorted newest-first). The caller posts the top one and lists the rest as siblings.
+
+This means typing `[[hida kisada]]` returns the multi-card list (current MVP behavior — top card + siblings hint). Typing `[[hida kisada N]]` for an `N` that doesn't exist falls back to the bare name (because no exact key match, then fuzzy lands on the bare name).
 
 **Files:**
 - Create: `src/EmeraldLegacy/api.js`
@@ -357,43 +362,85 @@ export async function init() {
   DATA.cyclesById = Object.fromEntries(cycles.map((c) => [c.id, c]));
   DATA.formatsById = Object.fromEntries(formats.map((f) => [f.id, f]));
 
-  // Build the normalised-name index. A single name can map to multiple cards.
+  // Build the bare-name index: a single name can map to multiple cards.
   DATA.cardsByNormalisedName = {};
+  // Build the disambiguated-key index: name + stripped name_extra → single card.
+  DATA.cardByDisambiguatedKey = {};
   cards.forEach((card) => {
-    const key = normalise(card.name);
-    if (!DATA.cardsByNormalisedName[key]) {
-      DATA.cardsByNormalisedName[key] = [];
+    const bareKey = normalise(card.name);
+    if (!DATA.cardsByNormalisedName[bareKey]) {
+      DATA.cardsByNormalisedName[bareKey] = [];
     }
-    DATA.cardsByNormalisedName[key].push(card);
+    DATA.cardsByNormalisedName[bareKey].push(card);
+
+    const disKey = disambiguatedKey(card);
+    if (disKey) DATA.cardByDisambiguatedKey[disKey] = card;
   });
 
-  // Build the fuzzy-search pool: pairs of [normalised name, normalised name].
-  // The pool is a list of unique normalised names; we look up the cards
-  // afterwards via cardsByNormalisedName.
+  // Fuzzy-search pool: bare normalised names only (the disambiguator path
+  // is exact-match, not fuzzy).
   const uniqueNames = Object.keys(DATA.cardsByNormalisedName);
   DATA.fuzzyPool = uniqueNames.map((n) => [n, n]);
+}
+
+/**
+ * Computes the canonical disambiguated lookup key for a card. Returns
+ * null if the card has no `name_extra`. The key has parens stripped and
+ * whitespace collapsed so that both `[[hida kisada (2)]]` and
+ * `[[hida kisada 2]]` resolve to the same card.
+ *
+ * @param {Object} card
+ * @return {?string}
+ */
+function disambiguatedKey(card) {
+  if (!card.name_extra) return null;
+  const extra = stripDisambiguator(card.name_extra);
+  if (!extra) return null;
+  return `${normalise(card.name)} ${extra}`;
+}
+
+/**
+ * Strips parens and collapses whitespace in a disambiguator string.
+ * Used to canonicalise both stored `name_extra` values and user query
+ * tails so they compare equal.
+ *
+ * @param {string} s
+ * @return {string}
+ */
+function stripDisambiguator(s) {
+  return normalise(s).replace(/[()]/g, " ").replace(/\s+/g, " ").trim();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 // Lookup
 
 /**
- * Finds all cards whose normalised name best-matches the query. Returns
- * an array sorted with the most recently released card first (by latest
- * version's pack release date, falling back to pack position).
+ * Resolves a user query to one or more cards.
+ *
+ * Resolution order:
+ *   1. Exact disambiguated match — e.g. `"hida kisada (2)"` or `"hida kisada 2"`
+ *      both resolve to the single `Hida Kisada (2)` card. Returns `[card]`.
+ *   2. Fuzzy bare-name match — returns *all* cards sharing the matched name,
+ *      sorted with the most recently released first. The caller renders the
+ *      top card and treats the rest as siblings.
  *
  * If no match is found, returns an empty array.
  *
- * @param {string} query A user query (e.g. "tadaka").
+ * @param {string} query A user query.
  * @return {CardWithVersions[]} Matching cards.
  */
 export function getClosestCards(query) {
   const normalised = normalise(query);
   if (!normalised) return [];
 
+  // 1. Exact disambiguated match (parens optional).
+  const canonical = stripDisambiguator(normalised);
+  const disHit = DATA.cardByDisambiguatedKey[canonical];
+  if (disHit) return [disHit];
+
+  // 2. Fuzzy on bare names.
   const matchedName = bestMatchValue(normalised, DATA.fuzzyPool);
   if (!matchedName) return [];
-
   const cards = DATA.cardsByNormalisedName[matchedName] || [];
   return [...cards].sort((a, b) => releaseRank(b) - releaseRank(a));
 }
@@ -504,14 +551,24 @@ This step requires network access to `https://www.emeralddb.org/api`. Run:
 EMERALDDB_API_URL=https://www.emeralddb.org/api node -e "
 import('./src/EmeraldLegacy/api.js').then(async (m) => {
   await m.init();
-  const cards = m.getClosestCards('hida kisada');
-  console.log('Found', cards.length, 'cards named like \"hida kisada\":');
-  cards.forEach((c) => console.log('-', c.name, c.name_extra || '', '(' + c.id + ')'));
+  const bare = m.getClosestCards('hida kisada');
+  console.log('Bare:', bare.length, 'cards for \"hida kisada\":');
+  bare.forEach((c) => console.log('-', c.name, c.name_extra || '', '(' + c.id + ')'));
+  const dis = m.getClosestCards('hida kisada 2');
+  console.log('Disambiguated:', dis.length, 'card(s) for \"hida kisada 2\":');
+  dis.forEach((c) => console.log('-', c.name, c.name_extra || '', '(' + c.id + ')'));
+  const disParens = m.getClosestCards('hida kisada (2)');
+  console.log('Disambiguated parens:', disParens.length, 'card(s) for \"hida kisada (2)\":');
+  disParens.forEach((c) => console.log('-', c.name, c.name_extra || '', '(' + c.id + ')'));
 }).catch((e) => { console.error(e); process.exit(1); });
 "
 ```
 
-Expected: prints multiple cards (e.g. `Hida Kisada` and `Hida Kisada (2)`), confirming the multi-card-name handling works.
+Expected:
+- `Bare` returns multiple cards (the bare name + all `name_extra` variants) sorted newest-first.
+- `Disambiguated` and `Disambiguated parens` each return exactly one card — the `Hida Kisada (2)` variant — confirming both forms resolve to the same record.
+
+If EmeraldDB doesn't have a `Hida Kisada (2)` at runtime, substitute another name with a known disambiguator (e.g. inspect the card list for any record with non-null `name_extra`).
 
 If the network is unavailable, skip this step and report DONE_WITH_CONCERNS noting the smoke wasn't run.
 
@@ -858,8 +915,15 @@ function buildFooter(card, version, pack, formatsById, siblings) {
   }
   parts.push(legalitySummary(card, formatsById));
   if (siblings && siblings.length > 0) {
+    const variants = siblings
+      .filter((c) => c.name_extra)
+      .map((c) => c.name_extra)
+      .join(", ");
     const otherCount = siblings.length;
-    parts.push(`${otherCount} other card${otherCount === 1 ? "" : "s"} share this name — use [[${card.name.toLowerCase()}|set]] to pick one`);
+    const hint = variants
+      ? `${otherCount} other card${otherCount === 1 ? "" : "s"} share this name (${variants}) — append the disambiguator, e.g. [[${card.name.toLowerCase()} 2]]`
+      : `${otherCount} other card${otherCount === 1 ? "" : "s"} share this name`;
+    parts.push(hint);
   }
   return parts.join(" • ");
 }
@@ -908,11 +972,10 @@ The inline-trigger syntax handled here:
 - `[[card]]` — full card view
 - `{{card}}` — image only
 - `<<card>>` — flavour only
-- `[[card|set]]` / `[[card|n]]` — pick a specific printing (build-phase Plan 1 ships this with set/index resolution, but only at the *card* level; the `|set` modifier picks which of the matching cards to render when there are multi-name siblings)
+- `[[card name_extra]]` — pick a specific same-named variant directly, e.g. `[[hida kisada 2]]` or `[[hida kisada (2)]]`. Resolved by `getClosestCards` itself (exact disambiguated lookup before fuzzy fallback). No special handling needed in the message router.
+- `[[card|n]]` — escape hatch for the rare case where multiple same-name cards have no `name_extra` to address them by; picks the nth match (`0` = newest, `-1` = oldest).
 
-Multi-card name handling: when `getClosestCards` returns N cards, post one embed for the top card (most recent) and pass the remaining N-1 cards as `siblings` so the footer shows the disambiguation hint.
-
-The `|<arg>` modifier for now only supports an integer index (`-1` for newest, `0` for first, etc.) into the matching-cards list. Set-name resolution is deferred to Plan 2 (it needs printing-level filtering, not just card-level). Document this clearly in the comment.
+Multi-card name handling: when `getClosestCards` returns N cards, post one embed for the top card (most recent) and pass the remaining N-1 cards as `siblings` so the footer shows the disambiguation hint. When `getClosestCards` returns one card (because the query was disambiguated), `siblings` is empty and no hint is shown.
 
 **Files:**
 - Modify: `src/Events/messageCreate.js`
@@ -982,14 +1045,17 @@ export default async function execute(message) {
  * Parses inline triggers in a message and posts one embed per trigger.
  *
  * Supported syntax:
- *   [[card]]        - full card view
- *   {{card}}        - image only
- *   <<card>>        - flavour only
- *   [[card|n]]      - pick the nth matching card when there are siblings
- *                     (0 = oldest, -1 = newest; default is -1)
- *
- * Note: the `|<set>` form (pick a specific printing/pack) is reserved
- * for Plan 2; this build only resolves card-level disambiguation.
+ *   [[card]]                 - full card view; multi-card names render the
+ *                              newest variant with a footer hint listing the
+ *                              other variants' name_extra.
+ *   {{card}}                 - image only
+ *   <<card>>                 - flavour only
+ *   [[card 2]] / [[card (2)]] - pick a specific same-named variant by its
+ *                              name_extra (parens optional). Resolved inside
+ *                              getClosestCards — no special parsing here.
+ *   [[card|n]]               - escape hatch when multiple same-name cards
+ *                              have no name_extra to disambiguate them.
+ *                              0 = newest, -1 = oldest.
  *
  * @param {Object} message A Discord message.
  */
@@ -1228,7 +1294,7 @@ async function execute(interaction, client) {
 
   if (commandName) {
     const command = client.commands.get(commandName);
-    if (command && !command.data.hideFromHelp) {
+    if (command && !command.meta.hideFromHelp) {
       titleText = `\`${command.data.name}\``;
       descriptionText = command.data.longDescription
         ? command.data.longDescription
@@ -1241,7 +1307,7 @@ async function execute(interaction, client) {
     }
   } else {
     titleText = "Imperial Library";
-    descriptionText = `A Discord bot for [Legend of the Five Rings — Emerald Legacy](https://emeralddb.org/).\n\n**Looking up cards**\n\`[[card]]\` to view a card with stats, text, and current legality\n\`{{card}}\` to view its image only\n\`<<card>>\` to view its flavour text only\n\n**Disambiguating shared names**\nL5R has multiple distinct cards sharing a name (e.g. \`Tadaka\`). When this happens, \`[[card]]\` shows the most recent one and a footer hint lists the others. Use \`[[card|n]]\` to pick a specific match: \`-1\` is the oldest, \`0\` is the newest (the default).\n\n**Commands**`;
+    descriptionText = `A Discord bot for [Legend of the Five Rings — Emerald Legacy](https://emeralddb.org/).\n\n**Looking up cards**\n\`[[card]]\` to view a card with stats, text, and current legality\n\`{{card}}\` to view its image only\n\`<<card>>\` to view its flavour text only\n\n**Disambiguating shared names**\nL5R has multiple distinct cards sharing a name (e.g. \`Tadaka\`, \`Hida Kisada\`). When this happens, \`[[card]]\` shows the most recent variant and the footer lists the others. To pick a specific variant, append its disambiguator: \`[[hida kisada 2]]\` or \`[[hida kisada (2)]]\` both resolve to \`Hida Kisada (2)\`.\n\n**Commands**`;
 
     client.commands.forEach((command) => {
       if (!command.meta.hideFromHelp) {
