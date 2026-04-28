@@ -12,9 +12,10 @@ The repo is mid-migration from Netrunner to Emerald Legacy. The plan is **strip-
 
 1. **Done.** Tagged `netrunner-final` — last commit reflecting the Netrunner-era project.
 2. **Done.** Stripped Netrunner/ONR code, content, and config (see `docs/superpowers/plans/2026-04-27-strip-netrunner.md`).
-3. **In progress.** Build the Emerald Legacy module against EmeraldDB on the leftover scaffolding.
+3. **Done (MVP).** Built Emerald Legacy inline-trigger card lookup against EmeraldDB (see `docs/superpowers/plans/2026-04-28-emerald-legacy-mvp.md`). The bot now answers `[[card]]`, `{{card}}`, and `<<card>>`, plus the alias superuser commands.
+4. **Pending.** Remaining slash commands (`/search`, `/random`, `/view_set`, `/view_format`, `/view_cycle`) — separate plan to follow.
 
-Until step 3 lands, the bot answers `/about` and `/help` with migration-status placeholders and does not respond to inline triggers. Card lookup returns when EL is wired in.
+The bot is now usable for its core card-lookup purpose. Slash card commands are a future enhancement, not a blocker for deploying.
 
 ## What the bot does (target state)
 
