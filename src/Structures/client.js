@@ -16,6 +16,8 @@ import {
 import { init as initCommands } from "./commands.js";
 import { init as initHandler } from "./handler.js";
 import { init as initEvents } from "./events.js";
+import { init as initEmeraldLegacy } from "../EmeraldLegacy/api.js";
+import { loadAliases } from "../Aliases/aliases.js";
 import { loadWhitelist } from "../Permissions/serverWhitelist.js";
 import { init as initDatabase } from "../Database/database.js";
 import { readBool } from "../Utility/env.js";
@@ -43,6 +45,14 @@ export async function start(config) {
   // Initialise database
   console.log("initialising database...");
   await initDatabase();
+
+  // Initialise card data
+  console.log("initialising emerald legacy api...");
+  await initEmeraldLegacy();
+
+  // Load aliases
+  console.log("loading aliases...");
+  loadAliases();
 
   // Set up whitelist
   if (readBool("WHITELIST_SERVERS")) {
