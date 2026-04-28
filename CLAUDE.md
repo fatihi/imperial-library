@@ -31,14 +31,11 @@ Per-message inline command count is capped by `RESULT_LIMIT` (default 5).
 
 - `/about` — about Imperial Library.
 - `/help` — help text.
-- `/basic_actions` — adapt to L5R's basic actions (Dynasty/Conflict phase actions, etc.).
-- `/glossary` — L5R/EL keyword and term lookup.
 - `/search` — free-text card search (EmeraldDB).
 - `/random` — random card, optionally filtered.
 - `/view_set` — browse a card pack/set.
 - `/view_format` — browse a tournament format (EL has formats).
-- `/get_rule` — fetch a rule from the EL rules document by section number.
-- `/search_rule` — free-text search of the EL rules document.
+- `/view_cycle` — browse a cycle (EmeraldDB groups packs into cycles, with `publisher` discriminating FFG from Emerald-Legacy releases).
 - Superuser commands (`alias_add`/`alias_remove`/`alias_view`, `whitelist_server_*`) — admin tooling, kept as-is in shape.
 
 **Slash commands dropped:**
@@ -46,10 +43,8 @@ Per-message inline command count is capped by `RESULT_LIMIT` (default 5).
 - `/mark` — Netrunner-only mechanic.
 - `/side` — Netrunner Runner/Corp coin-flip; L5R first-player choice is decided by honor bid, not coin flip.
 - `/view_banlist` — EL has only a current legality state (no historical banlists to enumerate); legality is shown inside `[[card]]`.
-
-**Deferred decisions** (resolved during EmeraldDB API characterization in the build phase):
-
-- `/view_cycle` — kept iff EL groups packs into cycles. If EmeraldDB doesn't expose a cycle concept, drop it.
+- `/basic_actions` — Sahasrara showed Netrunner's printed "Basic Action Card" for each side. L5R has no equivalent reference card; player actions vary by phase, ring, and triggered abilities, not a fixed printed list.
+- `/get_rule`, `/search_rule`, `/glossary` — deferred indefinitely. EmeraldDB has no rules or glossary endpoint; rules live as AsciiDoc in a separate GitHub repo, glossary doesn't exist upstream at all. Both are out of scope for the current build phase. May come back in a later phase if there's demand.
 
 **Out of scope for now:** clan/ring lookup, honor-bid simulator, conflict-type primer, lore quotes, deckbuilding helpers. Goal is **feature parity with Sahasrara**, not a wider L5R toolbelt.
 
