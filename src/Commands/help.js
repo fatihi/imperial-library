@@ -31,7 +31,7 @@ async function execute(interaction, client) {
 
   if (commandName) {
     const command = client.commands.get(commandName);
-    if (command && !command.data.hideFromHelp) {
+    if (command && !command.meta.hideFromHelp) {
       titleText = `\`${command.data.name}\``;
       descriptionText = command.data.longDescription
         ? command.data.longDescription
@@ -44,7 +44,7 @@ async function execute(interaction, client) {
     }
   } else {
     titleText = "Imperial Library";
-    descriptionText = `A Discord bot for Legend of the Five Rings — Emerald Legacy.\n\n_Card lookup is currently being rebuilt; only meta commands are available right now._\n\n**Commands**`;
+    descriptionText = `A Discord bot for [Legend of the Five Rings — Emerald Legacy](https://emeralddb.org/).\n\n**Looking up cards**\n\`[[card]]\` to view a card with stats, text, and current legality\n\`{{card}}\` to view its image only\n\`<<card>>\` to view its flavour text only\n\n**Disambiguating shared names**\nL5R has multiple distinct cards sharing a name (e.g. \`Tadaka\`, \`Hida Kisada\`). When this happens, \`[[card]]\` shows the most recent variant and the footer lists the others. To pick a specific variant, append its disambiguator: \`[[hida kisada 2]]\` or \`[[hida kisada (2)]]\` both resolve to \`Hida Kisada (2)\`.\n\n**Commands**`;
 
     client.commands.forEach((command) => {
       if (!command.meta.hideFromHelp) {
