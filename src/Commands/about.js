@@ -17,7 +17,7 @@ const data = new SlashCommandBuilder()
 const meta = {};
 
 async function execute(interaction, client) {
-  const message = `**Imperial Library** is a card-fetching Discord bot for [Legend of the Five Rings — Emerald Legacy](https://emeralddb.org/).\n\nThe bot is currently mid-migration from its Netrunner-fetching predecessor (Sahasrara). Card lookup will return once the Emerald Legacy build phase lands.`;
+  const message = `**Imperial Library** is a card-fetching Discord bot for [Legend of the Five Rings — Emerald Legacy](https://emeralddb.org/), the community-maintained continuation of the L5R LCG.\n\nUse \`[[card]]\` to look up a card, \`{{card}}\` for its image, or \`<<card>>\` for flavour text. See \`/help\` for full usage.\n\nCard data is sourced from [EmeraldDB](https://www.emeralddb.org/).`;
 
   const embed = new EmbedBuilder()
     .setTitle(":information_source: About Imperial Library")
